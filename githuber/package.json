@@ -1,12 +1,12 @@
 {
-  "name": "server",
+  "name": "githuber",
   "version": "1.0.0",
   "description": "Node.js app to serve articles from a main branch of public Git repository.",
-  "main": "dist/index.js",
+  "main": "dist/server.js",
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --exec ts-node src/index.ts",
-    "start": "node dist/index.js",
+    "start": "node dist/server.js",
     "clean": "rm -rf dist",
     "prebuild": "npm run clean",
     "watch": "tsc --watch",
@@ -16,9 +16,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@octokit/rest": "22.0.0",
+    "@types/cors": "2.8.19",
     "@types/express": "5.0.3",
     "@types/node": "24.0.3",
+    "cors": "2.8.5",
+    "dotenv": "16.5.0",
     "express": "5.1.0",
+    "p-limit": "6.2.0",
     "typescript": "5.8.3"
   },
   "devDependencies": {
