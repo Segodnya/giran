@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Node.js app to serve articles from a main branch of public Git repository.",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "start": "node dist/index.js",
+    "clean": "rm -rf dist",
+    "prebuild": "npm run clean",
+    "watch": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/express": "5.0.3",
+    "@types/node": "24.0.3",
+    "express": "5.1.0",
+    "typescript": "5.8.3"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "8.34.0",
+    "nodemon": "3.1.10",
+    "ts-node": "10.9.2"
+  }
+}
