@@ -1,106 +1,101 @@
-import { Octokit } from '@octokit/rest';
-import pLimit from 'p-limit';
-import { config } from 'dotenv';
+import { Octokit } from '@octokit/rest'
+import pLimit from 'p-limit'
+import { config } from 'dotenv'
 
-// Load environment variables
-config();
+config()
 
 export interface GitHubConfig {
-  token?: string;
-  userAgent?: string;
-  baseUrl?: string;
-  rateLimit?: number;
+  token?: string
+  userAgent?: string
+  baseUrl?: string
+  rateLimit?: number
 }
 
 export interface GitHubRepository {
-  owner: string;
-  repo: string;
-  fullName: string;
-  description: string | null;
-  private: boolean;
-  fork: boolean;
-  createdAt: string;
-  updatedAt: string;
-  pushedAt: string;
-  size: number;
-  stargazersCount: number;
-  watchersCount: number;
-  language: string | null;
-  forksCount: number;
-  defaultBranch: string;
+  owner: string
+  repo: string
+  fullName: string
+  description: string | null
+  private: boolean
+  fork: boolean
+  createdAt: string
+  updatedAt: string
+  pushedAt: string
+  size: number
+  stargazersCount: number
+  watchersCount: number
+  language: string | null
+  forksCount: number
+  defaultBranch: string
 }
 
 export interface GitHubContent {
-  name: string;
-  path: string;
-  sha: string;
-  size: number;
-  url: string;
-  htmlUrl: string;
-  downloadUrl: string | null;
-  type: 'file' | 'dir';
-  content?: string;
-  encoding?: string;
+  name: string
+  path: string
+  sha: string
+  size: number
+  url: string
+  htmlUrl: string
+  downloadUrl: string | null
+  type: 'file' | 'dir'
+  content?: string
+  encoding?: string
 }
 
 export interface GitHubBranch {
-  name: string;
+  name: string
   commit: {
-    sha: string;
-    url: string;
-  };
-  protected: boolean;
+    sha: string
+    url: string
+  }
+  protected: boolean
 }
 
 export interface GitHubCommit {
-  sha: string;
-  url: string;
+  sha: string
+  url: string
   author: {
-    name: string;
-    email: string;
-    date: string;
-  };
+    name: string
+    email: string
+    date: string
+  }
   committer: {
-    name: string;
-    email: string;
-    date: string;
-  };
-  message: string;
+    name: string
+    email: string
+    date: string
+  }
+  message: string
 }
 
 export class GitHubApiError extends Error {
-  constructor(
-    message: string,
-    public status?: number,
-    public response?: any
-  ) {
-    super(message);
-    this.name = 'GitHubApiError';
+  constructor(message: string, public status?: number, public response?: any) {
+    super(message)
+    this.name = 'GitHubApiError'
   }
 }
 
 export class GitHubService {
-  private octokit: Octokit;
-  private rateLimiter: ReturnType<typeof pLimit>;
-  private requestCount = 0;
-  private lastResetTime = Date.now();
+  private octokit: Octokit
+  private rateLimiter: ReturnType<typeof pLimit>
+  private requestCount = 0
+  private lastResetTime = Date.now()
 
   constructor(config: GitHubConfig = {}) {
-    const token = config.token || process.env.GITHUB_TOKEN;
-    
+    const token = config.token || process.env.GITHUB_TOKEN
+
     if (!token) {
-      console.warn('GitHub token not provided. API requests will be limited.');
+      console.warn('GitHub token not provided. API requests will be limited.')
     }
 
     this.octokit = new Octokit({
       auth: token,
       userAgent: config.userAgent || 'GitHub-Service/1.0.0',
       baseUrl: config.baseUrl || 'https://api.github.com',
-    });
+    })
 
     // Rate limiter (GitHub allows 5000 requests per hour for authenticated users)
-    const rateLimit = config.rateLimit || 60; // requests per minute
-    this.rateLimiter = pLimit(rateLimit);
+    const rateLimit = config.rateLimit || 60 // requests per minute
+    this.rateLimiter = pLimit(rateLimit)
   }
 
   /**
@@ -108,10 +103,10 @@ export class GitHubService {
    */
   async getRateLimit(): Promise<any> {
     try {
-      const response = await this.octokit.rest.rateLimit.get();
-      return response.data;
+      const response = await this.octokit.rest.rateLimit.get()
+      return response.data
     } catch (error) {
-      throw this.handleError(error);
+      throw this.handleError(error)
     }
   }
 
@@ -121,13 +116,13 @@ export class GitHubService {
   async getRepository(owner: string, repo: string): Promise<GitHubRepository> {
     return this.rateLimiter(async () => {
       try {
-        this.trackRequest();
+        this.trackRequest()
         const response = await this.octokit.rest.repos.get({
           owner,
           repo,
-        });
+        })
 
-        const data = response.data;
+        const data = response.data
         return {
           owner: data.owner.login,
           repo: data.name,
@@ -144,11 +139,11 @@ export class GitHubService {
           language: data.language,
           forksCount: data.forks_count,
           defaultBranch: data.default_branch,
-        };
+        }
       } catch (error) {
-        throw this.handleError(error);
+        throw this.handleError(error)
       }
-    });
+    })
   }
 
   /**
@@ -158,20 +153,20 @@ export class GitHubService {
     owner: string,
     repo: string,
     path: string = '',
-    ref?: string
+    ref?: string,
   ): Promise<GitHubContent[]> {
     return this.rateLimiter(async () => {
       try {
-        this.trackRequest();
+        this.trackRequest()
         const response = await this.octokit.rest.repos.getContent({
           owner,
           repo,
           path,
           ref,
-        });
+        })
 
-        const data = response.data;
-        const contents = Array.isArray(data) ? data : [data];
+        const data = response.data
+        const contents = Array.isArray(data) ? data : [data]
 
         return contents.map((item: any) => ({
           name: item.name,
@@ -184,11 +179,11 @@ export class GitHubService {
           type: item.type as 'file' | 'dir',
           content: item.content,
           encoding: item.encoding,
-        }));
+        }))
       } catch (error) {
-        throw this.handleError(error);
+        throw this.handleError(error)
       }
-    });
+    })
   }
 
   /**
@@ -198,20 +193,22 @@ export class GitHubService {
     owner: string,
     repo: string,
     path: string,
-    ref?: string
+    ref?: string,
   ): Promise<string> {
-    const contents = await this.getContent(owner, repo, path, ref);
-    const file = contents[0];
+    const contents = await this.getContent(owner, repo, path, ref)
+    const file = contents[0]
 
     if (!file || file.type !== 'file' || !file.content) {
-      throw new GitHubApiError(`Path ${path} is not a file or content is not available`);
+      throw new GitHubApiError(
+        `Path ${path} is not a file or content is not available`,
+      )
     }
 
     if (file.encoding === 'base64') {
-      return Buffer.from(file.content, 'base64').toString('utf-8');
+      return Buffer.from(file.content, 'base64').toString('utf-8')
     }
 
-    return file.content;
+    return file.content
   }
 
   /**
@@ -220,11 +217,11 @@ export class GitHubService {
   async getBranches(owner: string, repo: string): Promise<GitHubBranch[]> {
     return this.rateLimiter(async () => {
       try {
-        this.trackRequest();
+        this.trackRequest()
         const response = await this.octokit.rest.repos.listBranches({
           owner,
           repo,
-        });
+        })
 
         return response.data.map((branch: any) => ({
           name: branch.name,
@@ -233,11 +230,11 @@ export class GitHubService {
             url: branch.commit.url,
           },
           protected: branch.protected,
-        }));
+        }))
       } catch (error) {
-        throw this.handleError(error);
+        throw this.handleError(error)
       }
-    });
+    })
   }
 
   /**
@@ -247,18 +244,18 @@ export class GitHubService {
     owner: string,
     repo: string,
     options: {
-      sha?: string;
-      path?: string;
-      author?: string;
-      since?: string;
-      until?: string;
-      perPage?: number;
-      page?: number;
-    } = {}
+      sha?: string
+      path?: string
+      author?: string
+      since?: string
+      until?: string
+      perPage?: number
+      page?: number
+    } = {},
   ): Promise<GitHubCommit[]> {
     return this.rateLimiter(async () => {
       try {
-        this.trackRequest();
+        this.trackRequest()
         const response = await this.octokit.rest.repos.listCommits({
           owner,
           repo,
@@ -269,7 +266,7 @@ export class GitHubService {
           until: options.until,
           per_page: options.perPage || 30,
           page: options.page || 1,
-        });
+        })
 
         return response.data.map((commit: any) => ({
           sha: commit.sha,
@@ -285,11 +282,11 @@ export class GitHubService {
             date: commit.commit.committer.date,
           },
           message: commit.commit.message,
-        }));
+        }))
       } catch (error) {
-        throw this.handleError(error);
+        throw this.handleError(error)
       }
-    });
+    })
   }
 
   /**
@@ -298,22 +295,22 @@ export class GitHubService {
   async searchRepositories(
     query: string,
     options: {
-      sort?: 'stars' | 'forks' | 'help-wanted-issues' | 'updated';
-      order?: 'asc' | 'desc';
-      perPage?: number;
-      page?: number;
-    } = {}
+      sort?: 'stars' | 'forks' | 'help-wanted-issues' | 'updated'
+      order?: 'asc' | 'desc'
+      perPage?: number
+      page?: number
+    } = {},
   ): Promise<{ repositories: GitHubRepository[]; totalCount: number }> {
     return this.rateLimiter(async () => {
       try {
-        this.trackRequest();
+        this.trackRequest()
         const response = await this.octokit.rest.search.repos({
           q: query,
           sort: options.sort,
           order: options.order,
           per_page: options.perPage || 30,
           page: options.page || 1,
-        });
+        })
 
         const repositories = response.data.items.map((repo: any) => ({
           owner: repo.owner.login,
@@ -331,16 +328,16 @@ export class GitHubService {
           language: repo.language,
           forksCount: repo.forks_count,
           defaultBranch: repo.default_branch,
-        }));
+        }))
 
         return {
           repositories,
           totalCount: response.data.total_count,
-        };
+        }
       } catch (error) {
-        throw this.handleError(error);
+        throw this.handleError(error)
       }
-    });
+    })
   }
 
   /**
@@ -348,13 +345,13 @@ export class GitHubService {
    */
   async isRepositoryPublic(owner: string, repo: string): Promise<boolean> {
     try {
-      const repository = await this.getRepository(owner, repo);
-      return !repository.private;
+      const repository = await this.getRepository(owner, repo)
+      return !repository.private
     } catch (error) {
       if (error instanceof GitHubApiError && error.status === 404) {
-        return false; // Repository doesn't exist or is private
+        return false // Repository doesn't exist or is private
       }
-      throw error;
+      throw error
     }
   }
 
@@ -365,36 +362,37 @@ export class GitHubService {
     owner: string,
     repo: string,
     sha: string = 'HEAD',
-    recursive: boolean = false
+    recursive: boolean = false,
   ): Promise<any> {
     return this.rateLimiter(async () => {
       try {
-        this.trackRequest();
+        this.trackRequest()
         const response = await this.octokit.rest.git.getTree({
           owner,
           repo,
           tree_sha: sha,
           recursive: recursive ? '1' : undefined,
-        });
+        })
 
-        return response.data;
+        return response.data
       } catch (error) {
-        throw this.handleError(error);
+        throw this.handleError(error)
       }
-    });
+    })
   }
 
   /**
    * Track request count for monitoring
    */
   private trackRequest(): void {
-    this.requestCount++;
-    
+    this.requestCount++
+
     // Reset counter every hour
-    const now = Date.now();
-    if (now - this.lastResetTime > 3600000) { // 1 hour
-      this.requestCount = 0;
-      this.lastResetTime = now;
+    const now = Date.now()
+    if (now - this.lastResetTime > 3600000) {
+      // 1 hour
+      this.requestCount = 0
+      this.lastResetTime = now
     }
   }
 
@@ -405,7 +403,7 @@ export class GitHubService {
     return {
       count: this.requestCount,
       resetTime: new Date(this.lastResetTime + 3600000),
-    };
+    }
   }
 
   /**
@@ -413,29 +411,52 @@ export class GitHubService {
    */
   private handleError(error: any): GitHubApiError {
     if (error.response) {
-      const status = error.response.status;
-      const message = error.response.data?.message || error.message;
-      
+      const status = error.response.status
+      const message = error.response.data?.message || error.message
+
       switch (status) {
         case 401:
-          return new GitHubApiError('Authentication failed. Check your GitHub token.', status, error.response);
+          return new GitHubApiError(
+            'Authentication failed. Check your GitHub token.',
+            status,
+            error.response,
+          )
         case 403:
           if (error.response.data?.message?.includes('rate limit')) {
-            return new GitHubApiError('Rate limit exceeded. Please try again later.', status, error.response);
+            return new GitHubApiError(
+              'Rate limit exceeded. Please try again later.',
+              status,
+              error.response,
+            )
           }
-          return new GitHubApiError('Access forbidden. Check your permissions.', status, error.response);
+          return new GitHubApiError(
+            'Access forbidden. Check your permissions.',
+            status,
+            error.response,
+          )
         case 404:
-          return new GitHubApiError('Repository or resource not found.', status, error.response);
+          return new GitHubApiError(
+            'Repository or resource not found.',
+            status,
+            error.response,
+          )
         case 422:
-          return new GitHubApiError('Validation failed. Check your request parameters.', status, error.response);
+          return new GitHubApiError(
+            'Validation failed. Check your request parameters.',
+            status,
+            error.response,
+          )
         default:
-          return new GitHubApiError(`GitHub API error: ${message}`, status, error.response);
+          return new GitHubApiError(
+            `GitHub API error: ${message}`,
+            status,
+            error.response,
+          )
       }
     }
-    
-    return new GitHubApiError(`Network or unknown error: ${error.message}`);
+
+    return new GitHubApiError(`Network or unknown error: ${error.message}`)
   }
 }
 
-// Export a default instance
-export const githubService = new GitHubService(); 
+export const githubService = new GitHubService()

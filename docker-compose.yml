@@ -3,8 +3,11 @@ version: '3.8'
 services:
   githuber:
     build: ./githuber
-    ports:
-      - "3000:3000"
+
+  server:
+    build: ./server
+    environment:
+      GITHUBEER_SERVICE_URL: http://githuber:3000
 
   nginx:
     image: nginx:latest
@@ -13,4 +16,5 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
     depends_on:
-      - githuber 
+      - githuber
+      - server 

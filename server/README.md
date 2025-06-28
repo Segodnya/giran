@@ -6,37 +6,70 @@ TypeScript, Express.
 
 Simple server app that uses our local Githuber service to provide API endpoints to get the list of content items and a specific item with a query as a plain markdown to be rendered with Astro app (we're using our own repository folder - https://github.com/Segodnya/giran/tree/main/content).
 
-## Implementation Plan
+## API
 
-### Phase 1: Express Server Setup
-1. **Basic server configuration**
-   - Create main Express app
-   - Set up middleware (CORS, JSON parsing, logging)
-   - Configure error handling middleware
+### Get all articles
 
-2. **Route structure**
-   - Create `/api/articles` route for listing articles
-   - Create `/api/articles/:id` route for specific article
-   - Add health check endpoint
+- **Endpoint:** `/api/articles`
+- **Method:** `GET`
+- **Description:** Retrieves a list of all articles.
+- **Success Response:**
+  - **Code:** 200
+  - **Content:**
+    ```json
+    [
+        {
+            "id": "an-article",
+            "title": "An Article"
+        }
+    ]
+    ```
 
-### Phase 2: API Endpoints Implementation
-1. **Articles listing endpoint**
-   - Fetch all markdown files from repository
-   - Parse metadata (title, date, tags)
-   - Return formatted article list with pagination
+### Get a single article
 
-2. **Single article endpoint**
-   - Fetch specific markdown file by ID/path
-   - Return raw markdown content
-   - Add caching mechanism (once we request an article it should be cached)
+- **Endpoint:** `/api/articles/:id`
+- **Method:** `GET`
+- **Description:** Retrieves a single article by its ID.
+- **URL Params:**
+  - **Required:** `id=[string]`
+- **Success Response:**
+  - **Code:** 200
+  - **Content:**
+    ```json
+    {
+        "id": "an-article",
+        "title": "An Article",
+        "content": "This is the content of the article."
+    }
+    ```
+- **Error Response:**
+  - **Code:** 500 Internal Server Error
+  - **Content:** `Something broke!`
 
-### Phase 3: Testing and Documentation
-1. **Testing setup**
-   - Add unit tests for services
-   - Create integration tests for API endpoints
-   - Set up test coverage reporting
+## Deployment
 
-2. **API documentation**
-   - Document API endpoints
-   - Add example requests/responses
-   - Create deployment instructions
+The application is designed to be deployed using Docker. The repository includes a `docker-compose.yml` file that orchestrates the `server`, `githuber`, and `nginx` services.
+
+### Prerequisites
+
+- Docker
+- Docker Compose
+
+### Running the application
+
+1.  Navigate to the root of the `giran` repository.
+2.  Run the following command to build and start the services in detached mode:
+
+    ```bash
+    docker-compose up -d --build
+    ```
+
+3.  The application will be available at `http://localhost`.
+    -   API requests to `/api/articles` will be routed to the `server` service.
+    -   Other requests will be routed to the `githuber` service.
+
+### Services
+
+-   **server**: The main Node.js application that provides the API endpoints.
+-   **githuber**: A service that the `server` app depends on to get data from GitHub.
+-   **nginx**: A reverse proxy that routes requests to the appropriate service.

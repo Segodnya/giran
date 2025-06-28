@@ -1,13 +1,13 @@
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
 
-import { createServer } from './server';
+import { createServer } from './server'
 
-dotenv.config();
+dotenv.config()
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3000
 
-const app = createServer();
+const app = createServer()
 
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
-});
+  console.log(`Server is running on http://localhost:${port}`)
+})
