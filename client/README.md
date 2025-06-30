@@ -50,7 +50,7 @@ Astro, Tailwind, DaisyUI, Axios, Htmx
 
 ## Markdown Rendering Strategy
 
-Given that the server currently returns raw markdown content, we have these option:
+Given that the server currently returns raw markdown content, we have this option:
 
 ### Option: Hybrid Approach
 - Server processes basic markdown to HTML

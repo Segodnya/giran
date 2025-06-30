@@ -2,9 +2,9 @@
 
 Node.js app to serve articles from a main branch of public Git repository.
 
-TypeScript, Express.
+TypeScript, Express, Marked.
 
-Simple server app that uses our local Githuber service to provide API endpoints to get the list of content items and a specific item with a query as a plain markdown to be rendered with Astro app (we're using our own repository folder - https://github.com/Segodnya/giran/tree/main/content).
+Simple server app that uses our local Githuber service to provide API endpoints to get the list of content items and a specific item. The server processes markdown content into HTML before returning it to the client (we're using our own repository folder - https://github.com/Segodnya/giran/tree/main/content).
 
 ## API
 
@@ -29,7 +29,7 @@ Simple server app that uses our local Githuber service to provide API endpoints 
 
 - **Endpoint:** `/api/articles/:id`
 - **Method:** `GET`
-- **Description:** Retrieves a single article by its ID.
+- **Description:** Retrieves a single article by its ID with both raw markdown content and processed HTML.
 - **URL Params:**
   - **Required:** `id=[string]`
 - **Success Response:**
@@ -38,13 +38,22 @@ Simple server app that uses our local Githuber service to provide API endpoints 
     ```json
     {
         "id": "an-article",
-        "title": "An Article",
-        "content": "This is the content of the article."
+        "name": "an-article.md",
+        "content": "# Article Title\n\nThis is the raw markdown content.",
+        "html": "<h1>Article Title</h1>\n<p>This is the processed HTML content.</p>",
+        "size": 45,
+        "type": "file"
     }
     ```
 - **Error Response:**
   - **Code:** 500 Internal Server Error
   - **Content:** `Something broke!`
+
+## Features
+
+- **Markdown Processing**: The server automatically converts markdown content to HTML using the `marked` library
+- **GitHub Flavored Markdown**: Supports GFM features for better compatibility
+- **Dual Format**: Returns both raw markdown (`content`) and processed HTML (`html`) for maximum flexibility
 
 ## Deployment
 
