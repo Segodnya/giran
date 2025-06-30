@@ -1,0 +1,272 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { fetchArticleById, formatArticleTitle } from '../../services/api';
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect('/');
+}
+
+let article;
+let error;
+
+try {
+  article = await fetchArticleById(id);
+} catch (e) {
+  error = e instanceof Error ? e.message : 'Unknown error occurred';
+}
+
+// Check if this is an HTMX request
+const isHtmxRequest = Astro.request.headers.get('hx-request') === 'true';
+
+// If it's an HTMX request, return only the article content
+if (isHtmxRequest) {
+  if (error) {
+    return new Response(
+      `
+      <div class="alert alert-error">
+        <div>
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Error loading article: ${error}</span>
+        </div>
+        <div class="flex-none">
+          <button class="btn btn-sm btn-ghost" onclick="document.getElementById('article-content').classList.add('hidden')">✕</button>
+        </div>
+      </div>
+    `,
+      {
+        headers: { 'Content-Type': 'text/html' },
+      },
+    );
+  }
+
+  if (!article) {
+    return new Response(
+      `
+      <div class="alert alert-warning">
+        <span>Article not found</span>
+      </div>
+    `,
+      {
+        headers: { 'Content-Type': 'text/html' },
+      },
+    );
+  }
+
+  return new Response(
+    `
+    <article class="prose prose-lg max-w-none">
+      <div class="flex justify-between items-start mb-6">
+        <div>
+          <h1 class="text-4xl font-bold mb-2">${formatArticleTitle(article.name)}</h1>
+          <div class="flex gap-2 text-sm text-base-content/70">
+            <span class="badge badge-outline">${Math.round(article.size / 1024)} KB</span>
+            <span class="badge badge-outline">Markdown</span>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-ghost" onclick="document.getElementById('article-content').classList.add('hidden')">
+          ✕ Close
+        </button>
+      </div>
+      
+      <div class="divider"></div>
+      
+      <div class="markdown-content">
+        ${article.html}
+      </div>
+    </article>
+    <script>
+      // Re-highlight code blocks after HTMX content is loaded
+      if (typeof window !== 'undefined' && window.hljs) {
+        window.hljs.highlightAll();
+      }
+    </script>
+  `,
+    {
+      headers: { 'Content-Type': 'text/html' },
+    },
+  );
+}
+
+// For non-HTMX requests, return the full page
+if (error || !article) {
+  return Astro.redirect(
+    '/?error=' + encodeURIComponent(error || 'Article not found'),
+  );
+}
+---
+
+<Layout
+  title={formatArticleTitle(article.name)}
+  description={`Read article: ${formatArticleTitle(article.name)}`}
+>
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+      <a href="/" class="btn btn-ghost btn-sm"> ← Back to Articles </a>
+    </div>
+
+    <article class="prose prose-lg max-w-none">
+      <header class="mb-8">
+        <h1 class="text-4xl font-bold mb-4">
+          {formatArticleTitle(article.name)}
+        </h1>
+        <div class="flex gap-2 text-sm text-base-content/70">
+          <span class="badge badge-outline"
+            >{Math.round(article.size / 1024)} KB</span
+          >
+          <span class="badge badge-outline">Markdown</span>
+        </div>
+      </header>
+
+      <div class="divider"></div>
+
+      <div class="markdown-content" set:html={article.html} />
+    </article>
+  </div>
+</Layout>
+
+<style>
+  /* Enhanced styles for markdown content with syntax highlighting */
+  .markdown-content {
+    @apply text-base-content;
+  }
+
+  .markdown-content h1,
+  .markdown-content h2,
+  .markdown-content h3,
+  .markdown-content h4,
+  .markdown-content h5,
+  .markdown-content h6 {
+    @apply font-bold text-base-content mt-8 mb-4;
+  }
+
+  .markdown-content h1 {
+    @apply text-3xl;
+  }
+  .markdown-content h2 {
+    @apply text-2xl;
+  }
+  .markdown-content h3 {
+    @apply text-xl;
+  }
+  .markdown-content h4 {
+    @apply text-lg;
+  }
+
+  .markdown-content p {
+    @apply mb-4 leading-relaxed;
+  }
+
+  .markdown-content ul,
+  .markdown-content ol {
+    @apply mb-4 ml-6;
+  }
+
+  .markdown-content li {
+    @apply mb-2;
+  }
+
+  .markdown-content blockquote {
+    @apply border-l-4 border-primary pl-4 italic my-4 bg-base-200 p-4 rounded-r-lg;
+  }
+
+  /* Enhanced code block styling with syntax highlighting support */
+  .markdown-content pre {
+    @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4 relative;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.1),
+      0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .markdown-content pre code {
+    @apply bg-transparent p-0 text-gray-100;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .markdown-content code {
+    @apply bg-base-300 px-2 py-1 rounded text-sm font-mono;
+    color: #e11d48;
+  }
+
+  .markdown-content pre code {
+    @apply bg-transparent p-0;
+    color: inherit;
+  }
+
+  /* Copy button for code blocks */
+  .markdown-content pre:hover::before {
+    content: '📋 Copy';
+    @apply absolute top-2 right-2 bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs cursor-pointer;
+    transition: all 0.2s ease;
+  }
+
+  .markdown-content a {
+    @apply link link-primary hover:link-hover;
+  }
+
+  .markdown-content table {
+    @apply table table-zebra w-full mb-4 bg-base-100;
+  }
+
+  .markdown-content thead {
+    @apply bg-base-200;
+  }
+
+  .markdown-content img {
+    @apply max-w-full h-auto rounded-lg shadow-lg my-4;
+  }
+
+  /* Enhanced syntax highlighting overrides for better theme integration */
+  .markdown-content .hljs {
+    @apply bg-gray-900 text-gray-100;
+  }
+
+  .markdown-content .hljs-comment,
+  .markdown-content .hljs-quote {
+    @apply text-gray-500 italic;
+  }
+
+  .markdown-content .hljs-keyword,
+  .markdown-content .hljs-selector-tag,
+  .markdown-content .hljs-literal {
+    @apply text-blue-400;
+  }
+
+  .markdown-content .hljs-string,
+  .markdown-content .hljs-doctag {
+    @apply text-green-400;
+  }
+
+  .markdown-content .hljs-number,
+  .markdown-content .hljs-regexp,
+  .markdown-content .hljs-link {
+    @apply text-red-400;
+  }
+
+  .markdown-content .hljs-function .hljs-title,
+  .markdown-content .hljs-params {
+    @apply text-yellow-400;
+  }
+
+  .markdown-content .hljs-built_in,
+  .markdown-content .hljs-class .hljs-title {
+    @apply text-purple-400;
+  }
+
+  .markdown-content .hljs-attr,
+  .markdown-content .hljs-variable,
+  .markdown-content .hljs-template-variable {
+    @apply text-cyan-400;
+  }
+
+  .markdown-content .hljs-operator,
+  .markdown-content .hljs-selector-attr,
+  .markdown-content .hljs-selector-pseudo {
+    @apply text-orange-400;
+  }
+</style>

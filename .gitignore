@@ -1,4 +1,6 @@
+.astro
 .env
+.vscode
 coverage
 dist
 node_modules
