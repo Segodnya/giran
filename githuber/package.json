@@ -8,7 +8,8 @@
     "dev": "bun --watch src/index.ts",
     "start": "bun src/index.ts",
     "test": "bun test",
-    "test:watch": "bun test --watch"
+    "test:watch": "bun test --watch",
+    "knip": "knip"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +22,6 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "bun-types": "latest"
+    "knip": "^5.39.2"
   }
 }

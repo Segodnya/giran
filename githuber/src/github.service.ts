@@ -469,4 +469,4 @@ export class GitHubService {
   }
 }
 
-export const githubService = new GitHubService();
+new GitHubService();

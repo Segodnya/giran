@@ -1,5 +1,5 @@
 import { describe, test, expect } from 'bun:test';
-import { GitHubService, GitHubApiError } from '../services/github.service';
+import { GitHubService, GitHubApiError } from './github.service';
 
 describe('GitHubService', () => {
   const githubService = new GitHubService();

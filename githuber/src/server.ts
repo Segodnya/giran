@@ -1,7 +1,7 @@
 import { Elysia } from 'elysia';
 import { cors } from '@elysiajs/cors';
 
-import { GitHubService } from './services/github.service';
+import { GitHubService } from './github.service';
 
 export function createServer() {
   const app = new Elysia();
