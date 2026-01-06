@@ -1,0 +1,11 @@
+node_modules
+*.md
+.git
+.gitignore
+tests
+src/test
+*.test.ts
+coverage
+.env
+.env.*
+bun.lockb

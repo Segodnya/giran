@@ -12,7 +12,7 @@ services:
   server:
     build: ./server
     environment:
-      GITHUBEER_SERVICE_URL: http://githuber:3000
+      GITHUBER_SERVICE_URL: http://githuber:3000
 
   client:
     build: ./client

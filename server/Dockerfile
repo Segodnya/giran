@@ -1,25 +1,29 @@
-FROM node:20-alpine AS builder
-
+# Build stage: compile to standalone binary
+FROM oven/bun:1-alpine AS builder
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+# Install dependencies
+COPY package.json bun.lockb* ./
+RUN bun install --frozen-lockfile
 
-RUN npm install
+# Copy source code
+COPY src ./src
+COPY tsconfig.json ./
 
-COPY . .
+# Compile to standalone executable
+RUN bun build src/index.ts --compile --outfile server
 
-RUN npm run build
+# Final stage: minimal Alpine (smallest viable option)
+FROM alpine:3.19
+WORKDIR /app
 
-FROM node:20-alpine
+# Install only required runtime libraries
+RUN apk add --no-cache libstdc++ libgcc
 
-WORKDIR /usr/src/app
-
-COPY package*.json ./
-
-RUN npm install --omit=dev
-
-COPY --from=builder /usr/src/app/dist ./dist
+# Copy only the compiled binary
+COPY --from=builder /usr/src/app/server /app/server
 
 EXPOSE 3000
 
-CMD [ "node", "dist/index.js" ] 
+# Run the compiled binary
+CMD ["/app/server"]

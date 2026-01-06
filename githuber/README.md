@@ -4,7 +4,7 @@ Bun app to serve articles from a main branch of public Git repository.
 
 TypeScript, Elysia.
 
-Simple independent Bun service that uses Github API to provide API endpoints to get the list of content items and a specific item with a query as a plain markdown to be served with another local app (we're using our own repository folder - https://github.com/Segodnya/giran/tree/main/content).
+Simple independent Bun service that uses Github API to provide API endpoints to get the list of content items and a specific item with a query as a plain markdown to be served with another local app (we're using our own repository folder - <https://github.com/Segodnya/giran/tree/main/content>).
 
 ## Setup
 

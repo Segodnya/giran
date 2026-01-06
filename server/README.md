@@ -1,10 +1,10 @@
 # Server
 
-Node.js app to serve articles from a main branch of public Git repository.
+Bun app to serve articles from a main branch of public Git repository.
 
-TypeScript, Express, Marked.
+TypeScript, Bun, Elysia, Markdown-it.
 
-Simple server app that uses our local Githuber service to provide API endpoints to get the list of content items and a specific item. The server processes markdown content into HTML before returning it to the client (we're using our own repository folder - https://github.com/Segodnya/giran/tree/main/content).
+Simple server app that uses our local Githuber service to provide API endpoints to get the list of content items and a specific item. The server processes markdown content into HTML before returning it to the client (we're using our own repository folder - <https://github.com/Segodnya/giran/tree/main/content>).
 
 ## API
 
@@ -16,6 +16,7 @@ Simple server app that uses our local Githuber service to provide API endpoints 
 - **Success Response:**
   - **Code:** 200
   - **Content:**
+
     ```json
     [
         {
@@ -35,6 +36,7 @@ Simple server app that uses our local Githuber service to provide API endpoints 
 - **Success Response:**
   - **Code:** 200
   - **Content:**
+
     ```json
     {
         "id": "an-article",
@@ -45,13 +47,14 @@ Simple server app that uses our local Githuber service to provide API endpoints 
         "type": "file"
     }
     ```
+
 - **Error Response:**
   - **Code:** 500 Internal Server Error
   - **Content:** `Something broke!`
 
 ## Features
 
-- **Markdown Processing**: The server automatically converts markdown content to HTML using the `marked` library
+- **Markdown Processing**: The server automatically converts markdown content to HTML using the `markdown-it` library
 - **GitHub Flavored Markdown**: Supports GFM features for better compatibility
 - **Dual Format**: Returns both raw markdown (`content`) and processed HTML (`html`) for maximum flexibility
 
@@ -66,19 +69,20 @@ The application is designed to be deployed using Docker. The repository includes
 
 ### Running the application
 
-1.  Navigate to the root of the `giran` repository.
-2.  Run the following command to build and start the services in detached mode:
+1. Navigate to the root of the `giran` repository.
+2. Run the following command to build and start the services in detached mode:
 
     ```bash
     docker-compose up -d --build
     ```
 
-3.  The application will be available at `http://localhost`.
-    -   API requests to `/api/articles` will be routed to the `server` service.
-    -   Other requests will be routed to the `githuber` service.
+3. The application will be available at `http://localhost`.
+
+    - API requests to `/api/articles` will be routed to the `server` service.
+    - Other requests will be routed to the `githuber` service.
 
 ### Services
 
--   **server**: The main Node.js application that provides the API endpoints.
--   **githuber**: A service that the `server` app depends on to get data from GitHub.
--   **nginx**: A reverse proxy that routes requests to the appropriate service.
+- **server**: The main Bun application that provides the API endpoints.
+- **githuber**: A Bun service that the `server` app depends on to get data from GitHub.
+- **nginx**: A reverse proxy that routes requests to the appropriate service.

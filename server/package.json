@@ -1,16 +1,14 @@
 {
   "name": "server",
   "version": "1.0.0",
-  "description": "Node.js app to serve articles from a main branch of public Git repository.",
-  "main": "dist/index.js",
+  "description": "Bun app to serve articles with markdown processing.",
+  "main": "src/index.ts",
+  "type": "module",
   "scripts": {
-    "build": "rimraf ./dist && tsc",
-    "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts",
-    "test": "jest",
-    "test:watch": "jest --watchAll",
-    "test:coverage": "jest --coverage",
-    "test:cov": "jest --coverage",
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
     "knip": "knip"
   },
   "keywords": [],
@@ -18,25 +16,12 @@
   "license": "ISC",
   "dependencies": {
     "@types/markdown-it": "14.1.2",
-    "axios": "1.10.0",
-    "cors": "2.8.5",
-    "express": "5.1.0",
-    "markdown-it": "14.1.0",
-    "morgan": "1.10.0"
+    "elysia": "1.4.21",
+    "@elysiajs/cors": "1.1.1",
+    "markdown-it": "14.1.0"
   },
   "devDependencies": {
-    "@types/cors": "2.8.19",
-    "@types/express": "5.0.3",
-    "@types/jest": "30.0.0",
-    "@types/morgan": "1.9.10",
-    "@types/node": "24.0.7",
-    "@types/supertest": "6.0.3",
-    "jest": "30.0.3",
-    "knip": "5.39.2",
-    "nodemon": "3.1.10",
-    "rimraf": "6.0.1",
-    "supertest": "7.1.1",
-    "ts-jest": "29.4.0",
-    "typescript": "5.8.3"
+    "@types/bun": "latest",
+    "knip": "5.39.2"
   }
 }

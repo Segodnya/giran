@@ -1,52 +1,37 @@
-import express, { Request, Response, NextFunction } from 'express'
-import cors from 'cors'
-import morgan from 'morgan'
-import { getArticle, getArticles } from './services/githuber'
+import path from 'path';
 
-const app = express()
-const port = process.env.PORT || 3000
+// Load .env from monorepo root BEFORE importing server
+const envPath = path.join(import.meta.dir, '../../.env');
 
-app.use(cors())
-app.use(morgan('dev'))
-app.use(express.json())
+await Bun.file(envPath)
+  .text()
+  .then((content) => {
+    content.split('\n').forEach((line) => {
+      const trimmed = line.trim();
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Server is running!')
-})
+      if (trimmed && !trimmed.startsWith('#')) {
+        const [key, ...values] = trimmed.split('=');
 
-app.get(
-  '/api/articles',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const articles = await getArticles()
-      res.json(articles)
-    } catch (error) {
-      next(error)
-    }
-  },
-)
+        if (key && values.length) {
+          process.env[key.trim()] = values.join('=').trim();
+        }
+      }
+    });
 
-app.get(
-  '/api/articles/:id',
-  async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const article = await getArticle(req.params.id)
-      res.json(article)
-    } catch (error) {
-      next(error)
-    }
-  },
-)
-
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack)
-  res.status(500).send('Something broke!')
-})
-
-if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
+    console.log('✅ Environment variables loaded from monorepo root');
+    console.log('GITHUBER_SERVICE_URL:', process.env.GITHUBER_SERVICE_URL);
   })
-}
+  .catch((error) => {
+    console.warn('⚠️  No .env file found at monorepo root:', envPath);
+  });
 
-export { app }
+// Import server AFTER loading environment variables
+import { createServer } from './server';
+
+const port = process.env.PORT || 3000;
+
+const app = createServer();
+
+app.listen(port, () => {
+  console.log(`Server is running on http://localhost:${port}`);
+});

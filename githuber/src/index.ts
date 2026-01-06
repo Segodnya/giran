@@ -17,6 +17,7 @@ await Bun.file(envPath)
         }
       }
     });
+
     console.log('✅ Environment variables loaded from monorepo root');
     console.log('GITHUB_TOKEN present:', !!process.env.GITHUB_TOKEN);
     console.log('GITHUB_REPO_OWNER:', process.env.GITHUB_REPO_OWNER);
