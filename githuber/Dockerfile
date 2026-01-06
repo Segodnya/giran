@@ -1,15 +1,29 @@
-FROM node:18
-
+# Build stage: compile to standalone binary
+FROM oven/bun:1-alpine AS builder
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+# Install dependencies
+COPY package.json bun.lockb* ./
+RUN bun install --frozen-lockfile
 
-RUN npm install
+# Copy source code
+COPY src ./src
+COPY tsconfig.json ./
 
-COPY . .
+# Compile to standalone executable
+RUN bun build src/index.ts --compile --outfile githuber
 
-RUN npm run build
+# Final stage: minimal Alpine (smallest viable option)
+FROM alpine:3.19
+WORKDIR /app
+
+# Install only required runtime libraries
+RUN apk add --no-cache libstdc++ libgcc
+
+# Copy only the compiled binary
+COPY --from=builder /usr/src/app/githuber /app/githuber
 
 EXPOSE 3000
 
-CMD [ "npm", "start" ] 
+# Run the compiled binary
+CMD ["/app/githuber"]

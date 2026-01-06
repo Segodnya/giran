@@ -3,6 +3,11 @@ version: '3.8'
 services:
   githuber:
     build: ./githuber
+    environment:
+      GITHUB_TOKEN: ${GITHUB_TOKEN}
+      GITHUB_REPO_OWNER: ${GITHUB_REPO_OWNER}
+      GITHUB_REPO_NAME: ${GITHUB_REPO_NAME}
+      GITHUB_REPO_FOLDER: ${GITHUB_REPO_FOLDER}
 
   server:
     build: ./server
