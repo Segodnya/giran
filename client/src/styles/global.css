@@ -1,1 +1,127 @@
 @import 'tailwindcss';
+
+/* Custom base styles */
+:root {
+  --bc: #000;
+}
+
+[data-theme='dark'] {
+  --bc: #fff;
+}
+
+/* Custom prose styles for markdown content */
+.markdown-content {
+  color: inherit;
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-content h1 {
+  font-size: 2.25rem;
+}
+
+.markdown-content h2 {
+  font-size: 1.875rem;
+}
+
+.markdown-content h3 {
+  font-size: 1.5rem;
+}
+
+.markdown-content p {
+  margin-bottom: 1rem;
+}
+
+.markdown-content ul,
+.markdown-content ol {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-content ul {
+  list-style-type: disc;
+}
+
+.markdown-content ol {
+  list-style-type: decimal;
+}
+
+.markdown-content li {
+  margin-bottom: 0.5rem;
+}
+
+.markdown-content code {
+  background-color: var(
+    --fallback-bc,
+    oklch(var(--bc-h) var(--bc-s) var(--bc-l) / 0.1)
+  );
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+}
+
+.markdown-content pre {
+  background-color: var(
+    --fallback-bc,
+    oklch(var(--bc-h) var(--bc-s) var(--bc-l) / 0.1)
+  );
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  overflow-x: auto;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid;
+  border-color: var(--fallback-p, oklch(var(--p-h) var(--p-s) var(--p-l)));
+  padding-left: 1rem;
+  font-style: italic;
+  margin: 1rem 0;
+}
+
+.markdown-content a {
+  color: var(--fallback-p, oklch(var(--p-h) var(--p-s) var(--p-l)));
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.markdown-content img {
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+  margin: 1rem 0;
+}
+
+.markdown-content table {
+  width: 100%;
+  margin-bottom: 1rem;
+  border-collapse: collapse;
+}
+
+.markdown-content table th,
+.markdown-content table td {
+  border: 1px solid
+    var(--fallback-bc, oklch(var(--bc-h) var(--bc-s) var(--bc-l) / 0.2));
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.markdown-content hr {
+  border: none;
+  border-top: 1px solid
+    var(--fallback-bc, oklch(var(--bc-h) var(--bc-s) var(--bc-l) / 0.2));
+  margin: 2rem 0;
+}

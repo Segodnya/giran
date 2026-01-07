@@ -1,11 +1,16 @@
 import axios from 'axios';
 
-// In production, use relative URLs since nginx proxies API requests
-// In development, connect directly to the server
+// Detect SSR vs browser. In SSR, absolute URLs are required.
+// Prefer internal Docker network for server-to-server calls.
+const isSSR = typeof window === 'undefined' || (import.meta as any)?.env?.SSR;
+
+// Allow override via env, else choose sensible defaults per environment
 const API_BASE_URL =
-  process.env.NODE_ENV === 'production'
-    ? '' // Relative URL - nginx will proxy /api/* to server:3000
-    : 'http://localhost:3000'; // Local development
+  process.env.INTERNAL_API_URL && isSSR
+    ? process.env.INTERNAL_API_URL // e.g., http://server:3000
+    : isSSR
+    ? 'http://server:3000' // SSR inside container → talk to server service directly
+    : ''; // Browser → relative URL, nginx proxies /api/* to server
 
 const api = axios.create({
   baseURL: API_BASE_URL,

@@ -62,7 +62,7 @@ if (isHtmxRequest) {
       <div class="flex justify-between items-start mb-6">
         <div>
           <h1 class="text-4xl font-bold mb-2">${formatArticleTitle(article.name)}</h1>
-          <div class="flex gap-2 text-sm text-base-content/70">
+          <div class="flex gap-2 text-sm text-[var(--bc)] opacity-70">
             <span class="badge badge-outline">${Math.round(article.size / 1024)} KB</span>
             <span class="badge badge-outline">Markdown</span>
           </div>
@@ -113,7 +113,7 @@ if (error || !article) {
         <h1 class="text-4xl font-bold mb-4">
           {formatArticleTitle(article.name)}
         </h1>
-        <div class="flex gap-2 text-sm text-base-content/70">
+        <div class="flex gap-2 text-sm text-[var(--bc)] opacity-70">
           <span class="badge badge-outline"
             >{Math.round(article.size / 1024)} KB</span
           >
@@ -129,9 +129,10 @@ if (error || !article) {
 </Layout>
 
 <style>
+  @reference "../../styles/global.css";
   /* Enhanced styles for markdown content with syntax highlighting */
   .markdown-content {
-    @apply text-base-content;
+    color: var(--bc);
   }
 
   .markdown-content h1,
@@ -140,133 +141,181 @@ if (error || !article) {
   .markdown-content h4,
   .markdown-content h5,
   .markdown-content h6 {
-    @apply font-bold text-base-content mt-8 mb-4;
+    color: var(--bc);
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
   }
 
   .markdown-content h1 {
-    @apply text-3xl;
+    font-size: 1.875rem;
   }
   .markdown-content h2 {
-    @apply text-2xl;
+    font-size: 1.5rem;
   }
   .markdown-content h3 {
-    @apply text-xl;
+    font-size: 1.25rem;
   }
   .markdown-content h4 {
-    @apply text-lg;
+    font-size: 1.125rem;
   }
 
   .markdown-content p {
-    @apply mb-4 leading-relaxed;
+    margin-bottom: 1rem;
+    line-height: 1.625;
   }
 
   .markdown-content ul,
   .markdown-content ol {
-    @apply mb-4 ml-6;
+    margin-bottom: 1rem;
+    margin-left: 1.5rem;
   }
 
   .markdown-content li {
-    @apply mb-2;
+    margin-bottom: 0.5rem;
   }
 
   .markdown-content blockquote {
-    @apply border-l-4 border-primary pl-4 italic my-4 bg-base-200 p-4 rounded-r-lg;
+    border-left: 4px solid;
+    border-left-color: var(--p);
+    padding-left: 1rem;
+    padding: 1rem;
+    border-radius: 0 0.5rem 0.5rem 0;
+    margin: 1rem 0;
+    background-color: var(--b2);
+    font-style: italic;
   }
 
   /* Enhanced code block styling with syntax highlighting support */
   .markdown-content pre {
-    @apply bg-gray-900 p-4 rounded-lg overflow-x-auto mb-4 relative;
+    background-color: #111827;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+    position: relative;
     box-shadow:
       0 4px 6px -1px rgba(0, 0, 0, 0.1),
       0 2px 4px -1px rgba(0, 0, 0, 0.06);
   }
 
   .markdown-content pre code {
-    @apply bg-transparent p-0 text-gray-100;
+    background-color: transparent;
+    padding: 0;
+    color: #f3f4f6;
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
     font-size: 0.875rem;
     line-height: 1.5;
   }
 
   .markdown-content code {
-    @apply bg-base-300 px-2 py-1 rounded text-sm font-mono;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-family: monospace;
+    background-color: var(--b3);
     color: #e11d48;
   }
 
   .markdown-content pre code {
-    @apply bg-transparent p-0;
+    background-color: transparent;
+    padding: 0;
     color: inherit;
   }
 
   /* Copy button for code blocks */
   .markdown-content pre:hover::before {
     content: '📋 Copy';
-    @apply absolute top-2 right-2 bg-gray-800 text-gray-300 px-2 py-1 rounded text-xs cursor-pointer;
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    background-color: #1f2937;
+    color: #d1d5db;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    cursor: pointer;
     transition: all 0.2s ease;
   }
 
   .markdown-content a {
-    @apply link link-primary hover:link-hover;
+    color: var(--p);
+    text-decoration: underline;
+  }
+  .markdown-content a:hover {
+    text-decoration: none;
   }
 
   .markdown-content table {
-    @apply table table-zebra w-full mb-4 bg-base-100;
+    width: 100%;
+    margin-bottom: 1rem;
+    border-collapse: collapse;
+    background-color: var(--b1);
   }
 
   .markdown-content thead {
-    @apply bg-base-200;
+    background-color: var(--b2);
+  }
+  .markdown-content tbody tr:nth-child(even) {
+    background-color: var(--b2);
   }
 
   .markdown-content img {
-    @apply max-w-full h-auto rounded-lg shadow-lg my-4;
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    margin: 1rem 0;
   }
 
   /* Enhanced syntax highlighting overrides for better theme integration */
   .markdown-content .hljs {
-    @apply bg-gray-900 text-gray-100;
+    background-color: #111827;
+    color: #f3f4f6;
   }
 
   .markdown-content .hljs-comment,
   .markdown-content .hljs-quote {
-    @apply text-gray-500 italic;
+    color: #6b7280;
+    font-style: italic;
   }
 
   .markdown-content .hljs-keyword,
   .markdown-content .hljs-selector-tag,
   .markdown-content .hljs-literal {
-    @apply text-blue-400;
+    color: #60a5fa;
   }
 
   .markdown-content .hljs-string,
   .markdown-content .hljs-doctag {
-    @apply text-green-400;
+    color: #4ade80;
   }
 
   .markdown-content .hljs-number,
   .markdown-content .hljs-regexp,
   .markdown-content .hljs-link {
-    @apply text-red-400;
+    color: #f87171;
   }
 
   .markdown-content .hljs-function .hljs-title,
   .markdown-content .hljs-params {
-    @apply text-yellow-400;
+    color: #fbbf24;
   }
 
   .markdown-content .hljs-built_in,
   .markdown-content .hljs-class .hljs-title {
-    @apply text-purple-400;
+    color: #a78bfa;
   }
 
   .markdown-content .hljs-attr,
   .markdown-content .hljs-variable,
   .markdown-content .hljs-template-variable {
-    @apply text-cyan-400;
+    color: #22d3ee;
   }
 
   .markdown-content .hljs-operator,
   .markdown-content .hljs-selector-attr,
   .markdown-content .hljs-selector-pseudo {
-    @apply text-orange-400;
+    color: #fb923c;
   }
 </style>

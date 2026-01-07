@@ -87,4 +87,40 @@ describe('API Endpoints', () => {
       expect(response.status).toBe(500);
     });
   });
+
+  describe('GET /api/articles/:id/html', () => {
+    it('should return rendered HTML for an article', async () => {
+      mockedGetArticle.mockResolvedValue({
+        id: 'astro',
+        // @ts-ignore - extra fields are fine for test
+        name: 'astro.md',
+        // @ts-ignore - extra fields are fine for test
+        html: '<h1>Astro</h1>',
+        content: '# Astro',
+      });
+
+      const response = await app.handle(
+        new Request('http://localhost/api/articles/astro/html'),
+      );
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('Content-Type')).toContain('text/html');
+      const body = await response.text();
+      expect(body).toContain('<article');
+      expect(body).toContain('<h1');
+    });
+
+    it('should return 500 and error HTML when service fails', async () => {
+      mockedGetArticle.mockRejectedValue(new Error('Article not found'));
+
+      const response = await app.handle(
+        new Request('http://localhost/api/articles/missing/html'),
+      );
+
+      expect(response.status).toBe(500);
+      const body = await response.text();
+      expect(body).toContain('Failed to load article');
+      expect(response.headers.get('Content-Type')).toContain('text/html');
+    });
+  });
 });

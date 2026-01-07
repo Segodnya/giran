@@ -15,13 +15,23 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Production stage - simple static file server
-FROM nginx:alpine
+# Production stage - Node server (Astro SSR)
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install runtime dependencies
+COPY package*.json ./
+RUN npm ci --only=production
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/dist /app/dist
 
-# Use default nginx configuration for serving static files
+# Configure server port and host
+ENV PORT=80
+ENV HOST=0.0.0.0
+
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# Start Astro Node adapter server
+CMD ["node", "dist/server/entry.mjs"]

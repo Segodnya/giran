@@ -117,20 +117,13 @@ if (errorParam) {
                 <div class="card-actions justify-end">
                   <button
                     class="btn btn-primary btn-sm"
-                    hx-get={`/articles/${article.id}`}
+                    hx-get={`/api/articles/${article.id}/html`}
                     hx-target="#article-content"
                     hx-swap="innerHTML"
                     onclick="document.getElementById('article-content').classList.remove('hidden'); document.getElementById('article-content').scrollIntoView({ behavior: 'smooth' });"
                   >
                     📖 Read
                   </button>
-                  <a
-                    href={`/articles/${article.id}`}
-                    class="btn btn-ghost btn-sm"
-                    target="_blank"
-                  >
-                    🔗 Open
-                  </a>
                 </div>
               </div>
             </div>
