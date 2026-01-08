@@ -9,13 +9,16 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@octokit/rest": "22.0.1",
     "@tanstack/react-query": "5.90.16",
     "@types/markdown-it": "14.1.2",
     "highlight.js": "11.11.1",
     "markdown-it": "14.1.0",
     "next": "16.1.1",
+    "p-limit": "7.2.0",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "zod": "4.3.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

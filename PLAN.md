@@ -150,7 +150,7 @@ Transform from multi-service architecture (Astro client + Express server + GitHu
 
 ### 3.1 GitHub Service Layer - Type-Safe Implementation
 
-- [ ] Create `lib/services/github.service.ts` with Octokit integration
+- [x] Create `lib/services/github.service.ts` with Octokit integration
   - **Core class**: `GitHubService` with rate limiting and error handling
   - **Dependencies**: `@octokit/rest`, `p-limit`
   - **Rate limiting**: 60 requests per minute (configurable)
@@ -311,7 +311,7 @@ export class GitHubService {
 }
 ```
 
-- [ ] Implement article-specific methods:
+- [x] Implement article-specific methods:
   - `listArticles(owner, repo, folder)` - list markdown files in folder
   - `getArticle(owner, repo, filePath)` - fetch single article with content
   - Handle both file and directory responses
@@ -319,7 +319,7 @@ export class GitHubService {
 
 ### 3.2 Environment Configuration
 
-- [ ] Add to `.env.local`:
+- [x] Add to `.env.local`:
 
   ```bash
   GITHUB_TOKEN=xxx
@@ -328,7 +328,7 @@ export class GitHubService {
   GITHUB_REPO_FOLDER=content
   ```
 
-- [ ] Create `lib/config.ts` to validate and expose env vars
+- [x] Create `lib/config.ts` to validate and expose env vars
 
   ```typescript
   export const GITHUB_CONFIG = {
@@ -345,7 +345,7 @@ export class GitHubService {
 
 ### 3.3 Replace Mock with GitHub Data
 
-- [ ] Update `lib/services/article.service.ts`
+- [x] Update `lib/services/article.service.ts`
   - Keep mock as fallback
   - Use GitHub service when enabled
   - Implement smart caching:

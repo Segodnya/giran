@@ -1,71 +1,95 @@
-export interface GitHubConfig {
-  token?: string;
-  userAgent?: string;
-  baseUrl?: string;
-  rateLimit?: number;
-}
+import { z } from 'zod';
 
-export interface GitHubRepository {
-  owner: string;
-  repo: string;
-  fullName: string;
-  description: string | null;
-  private: boolean;
-  fork: boolean;
-  createdAt: string;
-  updatedAt: string;
-  pushedAt: string;
-  size: number;
-  stargazersCount: number;
-  watchersCount: number;
-  language: string | null;
-  forksCount: number;
-  defaultBranch: string;
-}
+// Zod Schemas
+export const GitHubConfigSchema = z.object({
+  token: z.string().optional(),
+  userAgent: z.string().optional(),
+  baseUrl: z.string().optional(),
+  rateLimit: z.number().optional(),
+});
 
-export interface GitHubContent {
-  name: string;
-  path: string;
-  sha: string;
-  size: number;
-  url: string;
-  htmlUrl: string;
-  downloadUrl: string | null;
-  type: 'file' | 'dir';
-  content?: string;
-  encoding?: string;
-}
+export const GitHubRepositorySchema = z.object({
+  owner: z.string(),
+  repo: z.string(),
+  fullName: z.string(),
+  description: z.string().nullable(),
+  private: z.boolean(),
+  fork: z.boolean(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+  pushedAt: z.string(),
+  size: z.number(),
+  stargazersCount: z.number(),
+  watchersCount: z.number(),
+  language: z.string().nullable(),
+  forksCount: z.number(),
+  defaultBranch: z.string(),
+});
 
-export interface GitHubBranch {
-  name: string;
-  commit: {
-    sha: string;
-    url: string;
-  };
-  protected: boolean;
-}
+export const GitHubContentSchema = z
+  .object({
+    name: z.string(),
+    path: z.string(),
+    sha: z.string(),
+    size: z.number(),
+    url: z.string(),
+    html_url: z.string(),
+    download_url: z.string().nullable(),
+    type: z.enum(['file', 'dir']),
+    content: z.string().optional(),
+    encoding: z.string().optional(),
+  })
+  .transform((data) => ({
+    name: data.name,
+    path: data.path,
+    sha: data.sha,
+    size: data.size,
+    url: data.url,
+    htmlUrl: data.html_url,
+    downloadUrl: data.download_url,
+    type: data.type,
+    content: data.content,
+    encoding: data.encoding,
+  }));
 
-export interface GitHubCommit {
-  sha: string;
-  url: string;
-  author: {
-    name: string;
-    email: string;
-    date: string;
-  };
-  committer: {
-    name: string;
-    email: string;
-    date: string;
-  };
-  message: string;
-}
+export const GitHubBranchSchema = z.object({
+  name: z.string(),
+  commit: z.object({
+    sha: z.string(),
+    url: z.string(),
+  }),
+  protected: z.boolean(),
+});
 
-interface ErrorResponse {
-  message?: string;
-  documentation_url?: string;
-  [key: string]: unknown;
-}
+export const GitHubCommitSchema = z.object({
+  sha: z.string(),
+  url: z.string(),
+  author: z.object({
+    name: z.string(),
+    email: z.string(),
+    date: z.string(),
+  }),
+  committer: z.object({
+    name: z.string(),
+    email: z.string(),
+    date: z.string(),
+  }),
+  message: z.string(),
+});
+
+export const ErrorResponseSchema = z
+  .object({
+    message: z.string().optional(),
+    documentation_url: z.string().optional(),
+  })
+  .passthrough();
+
+export type GitHubConfig = z.infer<typeof GitHubConfigSchema>;
+export type GitHubRepository = z.infer<typeof GitHubRepositorySchema>;
+export type GitHubContent = z.infer<typeof GitHubContentSchema>;
+export type GitHubBranch = z.infer<typeof GitHubBranchSchema>;
+export type GitHubCommit = z.infer<typeof GitHubCommitSchema>;
+export type ErrorResponse = z.infer<typeof ErrorResponseSchema>;
 
 export class GitHubApiError extends Error {
   constructor(
