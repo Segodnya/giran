@@ -96,111 +96,53 @@ Transform from multi-service architecture (Astro client + Express server + GitHu
 
 ### 2.1 API Route Structure
 
-- [ ] Create `app/api/articles/route.ts` (GET list)
-- [ ] Create `app/api/articles/[id]/route.ts` (GET single)
+- [x] Create `app/api/articles/route.ts` (GET list)
+- [x] Create `app/api/articles/[id]/route.ts` (GET single)
 
 ### 2.2 Backend Services Layer
 
-- [ ] Create `lib/services/article.service.ts`
+- [x] Create `lib/services/article.service.ts`
   - Implement `getArticles()` - returns mock list
   - Implement `getArticle(id: string)` - returns mock single
-- [ ] Create `lib/markdown.service.ts`
+- [x] Create `lib/markdown.service.ts`
   - Convert markdown to HTML
   - Add syntax highlighting for code blocks
   - Extract frontmatter/metadata
 
 ### 2.3 API Integration in Frontend
 
-- [ ] Update `app/page.tsx` to fetch from `/api/articles`
-- [ ] Update `app/articles/[id]/page.tsx` to fetch from `/api/articles/[id]`
-- [ ] Add error handling and loading states
-- [ ] Test API routes work correctly
+- [x] Update `app/page.tsx` to fetch from `/api/articles`
+  - Integrated TanStack Query `useQuery` for state management
+  - Added loading, error, and empty states
+- [x] Update `app/articles/[id]/page.tsx` to fetch from `/api/articles/[id]`
+  - Integrated TanStack Query `useQuery` with dynamic route params
+  - Renders HTML-formatted markdown content
+  - Error handling with fallback to plain markdown rendering
+- [x] Add error handling and loading states
+- [x] Test API routes work correctly
 
 ### 2.4 Shared Types
 
-- [ ] Create `lib/types/github.ts` with comprehensive GitHub entity types
+- [x] Create `lib/types/github.ts` with comprehensive GitHub entity types
+  - All type-safe with no implicit `any` types
+  - `ErrorResponse` interface for GitHub API responses
+  - All entity types: `GitHubConfig`, `GitHubRepository`, `GitHubContent`, `GitHubBranch`, `GitHubCommit`
+  - `GitHubApiError` class with proper error handling
 
-  ```typescript
-  // GitHub Config
-  export interface GitHubConfig {
-    token?: string;
-    userAgent?: string;
-    baseUrl?: string;
-    rateLimit?: number;
-  }
+- [x] Create `lib/types/article.ts`
+  - Export `Article`, `ArticleListItem` interfaces
+  - Used in both frontend and backend
+  - `app/providers.tsx` with TanStack Query configuration
 
-  // GitHub Repository
-  export interface GitHubRepository {
-    owner: string;
-    repo: string;
-    fullName: string;
-    description: string | null;
-    private: boolean;
-    fork: boolean;
-    createdAt: string;
-    updatedAt: string;
-    pushedAt: string;
-    size: number;
-    stargazersCount: number;
-    watchersCount: number;
-    language: string | null;
-    forksCount: number;
-    defaultBranch: string;
-  }
+### 2.5 Quality Improvements (Completed)
 
-  // GitHub Content (file or directory)
-  export interface GitHubContent {
-    name: string;
-    path: string;
-    sha: string;
-    size: number;
-    url: string;
-    htmlUrl: string;
-    downloadUrl: string | null;
-    type: 'file' | 'dir';
-    content?: string;
-    encoding?: string;
-  }
-
-  // GitHub Branch
-  export interface GitHubBranch {
-    name: string;
-    commit: {
-      sha: string;
-      url: string;
-    };
-    protected: boolean;
-  }
-
-  // GitHub Commit
-  export interface GitHubCommit {
-    sha: string;
-    url: string;
-    author: {
-      name: string;
-      email: string;
-      date: string;
-    };
-    committer: {
-      name: string;
-      email: string;
-      date: string;
-    };
-    message: string;
-  }
-
-  // GitHub API Error
-  export class GitHubApiError extends Error {
-    constructor(message: string, public status?: number, public response?: any) {
-      super(message);
-      this.name = 'GitHubApiError';
-    }
-  }
-  ```
-
-- [ ] Create `lib/types/article.ts`
-  - Export `Article`, `ArticleListItem`, `ArticleDetail` interfaces
-  - Use in both frontend and backend
+- [x] Fixed all TypeScript strict mode errors
+- [x] Removed all explicit `any` types
+- [x] Converted functions to arrow functions
+- [x] Replaced useEffect with TanStack Query `useQuery` hooks
+- [x] Added `@types/markdown-it` for full type coverage
+- [x] All code passes ESLint and TypeScript compilation
+- [x] Build succeeds with zero errors
 
 ---
 
