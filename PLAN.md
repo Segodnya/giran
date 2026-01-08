@@ -425,16 +425,16 @@ export const getArticle = async (id: string) => {
 
 ### 4.1 Dockerfile Consolidation
 
-- [ ] Create single `Dockerfile` for Next.js monolith
+- [x] Create single `Dockerfile` for Next.js monolith
   - Multi-stage build: build Next.js, then run with Bun
   - Expose port 3000
 
 ### 4.2 docker-compose Update
 
-- [ ] Replace multi-service setup with single Next.js container
-- [ ] Remove `githuber`, `server` services completely
-- [ ] Keep `nginx` for reverse proxy (optional, can be removed if not needed)
-- [ ] Configure HMR for local development with volume mounts
+- [x] Replace multi-service setup with single Next.js container
+- [x] Remove `githuber`, `server` services completely
+- [x] Keep `nginx` for reverse proxy (optional, can be removed if not needed)
+- [x] Configure HMR for local development with volume mounts
 
 ```yaml
 version: '3.8'
@@ -457,11 +457,11 @@ services:
 
 ### 4.3 Build & Run
 
-- [ ] Create unified `Dockerfile` (multi-stage)
+- [x] Create unified `Dockerfile` (multi-stage)
   - Stage 1: Build with Bun
   - Stage 2: Run Next.js with Bun runtime
-- [ ] Update `Makefile` for single-app deployment
-- [ ] Test with `docker-compose up`
+- [x] Update `Makefile` for single-app deployment
+- [x] Test with `docker-compose up`
 
 ---
 
@@ -478,6 +478,7 @@ services:
 - [ ] **Keep as reference**:
   - `/content` folder - sample articles (can be reference for types/structure)
 - [ ] Update `.gitignore` to exclude old directories if keeping for reference
+- [ ] Add knip config to find unused code across the app
 
 ### 5.2 Performance
 
