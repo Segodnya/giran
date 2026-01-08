@@ -26,23 +26,23 @@ Transform from multi-service architecture (Astro client + Express server + GitHu
 
 ### 1.1 Project Setup
 
-- [ ] Create Next.js project with Bun: `bun create next-app`
-- [ ] Update `package.json` with Bun scripts
-- [ ] Configure TypeScript with strict mode
-- [ ] Install dependencies: shadcn/ui, tailwind, markdown-it
+- [x] Create Next.js project with Bun: `bun create next-app`
+- [x] Update `package.json` with Bun scripts
+- [x] Configure TypeScript with strict mode
+- [x] Install dependencies: shadcn/ui, tailwind, markdown-it
 
 ### 1.2 UI Layout & Components
 
-- [ ] Create base layout wrapper component
-- [ ] Build article list page with mock data
+- [x] Create base layout wrapper component
+- [x] Build article list page with mock data
   - Display article cards with title, preview, date
-- [ ] Build article detail page with mock data
+- [x] Build article detail page with mock data
   - Display formatted markdown as HTML
   - Add back navigation, breadcrumbs
 
 ### 1.3 Mock Data Layer
 
-- [ ] Create `lib/mocks/articles.ts` with sample article structure
+- [x] Create `lib/mocks/articles.ts` with sample article structure
 
   ```typescript
   interface Article {
@@ -70,25 +70,25 @@ Transform from multi-service architecture (Astro client + Express server + GitHu
   ];
   ```
 
-- [ ] Mock 3-5 sample articles (use existing content from `/content` folder)
-- [ ] Create mock service function: `getMockArticles()`, `getMockArticle(id)`
+- [x] Mock 3-5 sample articles (use existing content from `/content` folder)
+- [x] Create mock service function: `getMockArticles()`, `getMockArticle(id)`
 
 ### 1.4 Frontend Pages & Routes
 
-- [ ] Create `app/page.tsx` (articles list)
+- [x] Create `app/page.tsx` (articles list)
   - Fetch articles from mock service
   - Display in grid/list layout
   - Link to detail pages
-- [ ] Create `app/articles/[id]/page.tsx` (article detail)
+- [x] Create `app/articles/[id]/page.tsx` (article detail)
   - Fetch single article from mock service
   - Render markdown with syntax highlighting
-- [ ] Test navigation between pages (no API calls yet)
+- [x] Test navigation between pages (no API calls yet)
 
 ### 1.5 Styling & Polish
 
-- [ ] Apply Tailwind theme (colors, spacing)
-- [ ] Ensure responsive design (mobile/tablet/desktop)
-- [ ] Add loading states and error boundaries
+- [x] Apply Tailwind theme (colors, spacing)
+- [x] Ensure responsive design (mobile/tablet/desktop)
+- [x] Add loading states and error boundaries
 
 ---
 
