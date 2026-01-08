@@ -373,12 +373,51 @@ export const getArticle = async (id: string) => {
 
 ### 3.4 Testing
 
-- [ ] Test article list loads from GitHub
-- [ ] Test article detail loads from GitHub with correct markdown content
-- [ ] Test error handling when GitHub is unavailable (fallback to mocks)
-- [ ] Test rate limiting doesn't block requests
-- [ ] Test cache invalidation on new commits
-- [ ] Verify all types are preserved (no `any` types)
+- [x] Test article list loads from GitHub
+- [x] Test article detail loads from GitHub with correct markdown content
+- [x] Test error handling when GitHub is unavailable (fallback to mocks)
+- [x] Test rate limiting doesn't block requests
+- [x] Test cache invalidation on new commits
+- [x] Verify all types are preserved (no `any` types)
+
+**Test Suite Implementation:**
+
+- [x] Created `lib/services/__tests__/github.service.test.ts`
+  - Constructor & initialization tests
+  - Error handling (404, auth errors, network errors)
+  - Rate limiting verification
+  - Type safety validation
+  - Real-world integration tests with public repos
+  - Article-specific methods (listArticles, getArticle)
+  - Error message validation
+
+- [x] Created `lib/services/__tests__/article.service.test.ts`
+  - Mock fallback tests (when GitHub disabled)
+  - Response format validation
+  - Cache behavior tests
+  - Error handling (concurrent requests, missing articles)
+  - Mock data consistency
+  - Type preservation (no implicit any types)
+  - Added `clearCache()` export for test cleanup
+
+- [x] Created `lib/services/__tests__/markdown.service.test.ts`
+  - Markdown to HTML conversion with syntax highlighting
+  - Frontmatter parsing (YAML-style metadata)
+  - Excerpt extraction from markdown
+  - Reading time estimation
+  - Edge cases (special characters, unicode, malformed input)
+  - Type safety validation
+  - Comprehensive markdown formatting tests
+
+- [x] Created `app/api/__tests__/articles.test.ts`
+  - GET /api/articles response validation
+  - GET /api/articles/[id] response validation
+  - Response schema verification
+  - Error handling and 404 responses
+  - Type enforcement (Article vs ArticleListItem)
+  - No implicit any types in API responses
+  - JSON serialization tests
+  - ISO timestamp format validation
 
 ---
 

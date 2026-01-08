@@ -146,3 +146,13 @@ export const getArticle = async (id: string): Promise<Article | null> => {
 
   return getMockArticle(id) || null;
 };
+
+/**
+ * Clear all caches
+ * Useful for testing and forcing fresh data
+ */
+export const clearCache = (): void => {
+  articlesCache.clear();
+  articleCache.clear();
+  githubService = null;
+};
