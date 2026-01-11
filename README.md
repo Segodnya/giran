@@ -342,3 +342,13 @@ MIT
 - [Bun Documentation](https://bun.sh/docs)
 - [TanStack Query](https://tanstack.com/query/latest)
 - [GitHub REST API](https://docs.github.com/en/rest)
+
+## Further tasks
+
+- [ ] Fix code snippets blocks styling
+- [ ] Add User CRUD
+- [ ] Add admin panel with Auth
+- [ ] Admin panel allows to show/hide specific articles
+- [ ] Admin panel allows to edit articles and push them to github
+- [ ] Add custom articles markup components: callout
+- [ ] Add ability to render custom article markup components from the markdown
