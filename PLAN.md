@@ -482,14 +482,14 @@ services:
 
 ### 5.2 Performance
 
-- [ ] Add ISR (Incremental Static Regeneration) for article pages
+- [x] Add ISR (Incremental Static Regeneration) for article pages
   - Revalidate on-demand when articles are updated
   - Cache static HTML for frequently accessed articles
-- [ ] Implement smart caching for GitHub API
+- [x] Implement smart caching for GitHub API
   - In-memory cache with TTL
   - Invalidate on repository commits
   - Monitor rate limits
-- [ ] Optimize markdown parsing
+- [x] Optimize markdown parsing
   - Lazy load highlight.js only when needed
   - Consider markdown-it plugins for performance
 

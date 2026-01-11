@@ -37,7 +37,7 @@ export const GET = async (
     }
 
     // Convert markdown content to HTML
-    const { html, frontmatter } = markdownToHtml(article.content);
+    const { html, frontmatter } = await markdownToHtml(article.content);
 
     return NextResponse.json(
       {
@@ -48,7 +48,13 @@ export const GET = async (
           frontmatter,
         },
       },
-      { status: 200 },
+      {
+        status: 200,
+        headers: {
+          // Enable ISR with 60-second revalidation
+          'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+        },
+      },
     );
   } catch (err) {
     console.error('Error fetching article:', err);
@@ -62,3 +68,6 @@ export const GET = async (
     );
   }
 };
+
+// Enable ISR with 60-second revalidation interval
+export const revalidate = 60;

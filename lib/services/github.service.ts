@@ -17,6 +17,9 @@ export class GitHubService {
   private rateLimiter: ReturnType<typeof pLimit>;
   private requestCount = 0;
   private lastResetTime = Date.now();
+  private rateLimitRemaining = 5000;
+  private rateLimitResetTime = 0;
+  private lastCommitShas: Map<string, string> = new Map();
 
   constructor(config: GitHubConfig = {}) {
     const token = config.token || process.env.GITHUB_TOKEN;
@@ -37,6 +40,17 @@ export class GitHubService {
   }
 
   /**
+   * Get rate limit status
+   */
+  getRateLimitStatus = () => {
+    return {
+      remaining: this.rateLimitRemaining,
+      resetTime: this.rateLimitResetTime,
+      requestCount: this.requestCount,
+    };
+  };
+
+  /**
    * Get repository information
    */
   getRepository = async (
@@ -46,7 +60,10 @@ export class GitHubService {
     return this.rateLimiter(async () => {
       try {
         this.trackRequest();
-        const { data } = await this.octokit.rest.repos.get({ owner, repo });
+        const { data, headers } = await this.octokit.rest.repos.get({ owner, repo });
+
+        // Track rate limit information from response headers
+        this.updateRateLimit(headers);
 
         return {
           owner: data.owner.login,
@@ -83,12 +100,15 @@ export class GitHubService {
     return this.rateLimiter(async () => {
       try {
         this.trackRequest();
-        const { data } = await this.octokit.rest.repos.getContent({
+        const { data, headers } = await this.octokit.rest.repos.getContent({
           owner,
           repo,
           path,
           ref,
         });
+
+        // Track rate limit information from response headers
+        this.updateRateLimit(headers);
 
         const contents = Array.isArray(data) ? data : [data];
 
@@ -234,6 +254,26 @@ export class GitHubService {
   };
 
   /**
+   * Update rate limit tracking from response headers
+   */
+  private updateRateLimit(headers: Record<string, string | number | undefined>): void {
+    const remaining = headers['x-ratelimit-remaining'];
+    const reset = headers['x-ratelimit-reset'];
+
+    if (remaining && typeof remaining === 'string') {
+      this.rateLimitRemaining = parseInt(remaining, 10);
+    } else if (typeof remaining === 'number') {
+      this.rateLimitRemaining = remaining;
+    }
+
+    if (reset && typeof reset === 'string') {
+      this.rateLimitResetTime = parseInt(reset, 10) * 1000;
+    } else if (typeof reset === 'number') {
+      this.rateLimitResetTime = reset * 1000;
+    }
+  }
+
+  /**
    * Track request count for rate limit monitoring
    */
   private trackRequest = (): void => {
@@ -247,5 +287,47 @@ export class GitHubService {
     }
 
     this.requestCount++;
+  };
+
+  /**
+   * Get the last commit SHA for a path (for cache invalidation)
+   */
+  getLastCommitSha = async (
+    owner: string,
+    repo: string,
+    path: string,
+    branch: string = 'main',
+  ): Promise<string | null> => {
+    return this.rateLimiter(async () => {
+      try {
+        this.trackRequest();
+        const cacheKey = `${owner}/${repo}/${path}/${branch}`;
+
+        // Return cached SHA if available
+        if (this.lastCommitShas.has(cacheKey)) {
+          return this.lastCommitShas.get(cacheKey) || null;
+        }
+
+        const { data, headers } = await this.octokit.rest.repos.listCommits({
+          owner,
+          repo,
+          path,
+          per_page: 1,
+        });
+
+        this.updateRateLimit(headers);
+
+        const sha = data[0]?.sha || null;
+
+        if (sha) {
+          this.lastCommitShas.set(cacheKey, sha);
+        }
+
+        return sha;
+      } catch (error) {
+        console.error('Failed to get last commit SHA:', error);
+        return null;
+      }
+    });
   };
 }

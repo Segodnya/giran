@@ -1,19 +1,44 @@
 import MarkdownIt from 'markdown-it';
-import hljs from 'highlight.js';
+import type { HLJSApi } from 'highlight.js';
 
-const md: MarkdownIt = new MarkdownIt({
-  highlight: (code: string, language: string) => {
-    if (language && hljs.getLanguage(language)) {
-      try {
-        return hljs.highlight(code, { language, ignoreIllegals: true }).value;
-      } catch (err) {
-        console.error('Highlight.js error:', err);
+// Lazy-load highlight.js to optimize performance
+let hljs: HLJSApi | null = null;
+
+const getHighlighter = async (): Promise<HLJSApi> => {
+  if (!hljs) {
+    const hljsModule = await import('highlight.js');
+    hljs = hljsModule.default;
+  }
+
+  return hljs;
+};
+
+let md: MarkdownIt | null = null;
+
+const getMarkdownParser = async (): Promise<MarkdownIt> => {
+  if (md) {
+    return md;
+  }
+
+  const highlighter = await getHighlighter();
+
+  md = new MarkdownIt({
+    highlight: (code: string, language: string) => {
+      if (language && highlighter.getLanguage(language)) {
+        try {
+          return highlighter.highlight(code, { language, ignoreIllegals: true })
+            .value;
+        } catch (err) {
+          console.error('Highlight.js error:', err);
+        }
       }
-    }
 
-    return md.utils.escapeHtml(code);
-  },
-});
+      return new MarkdownIt().utils.escapeHtml(code);
+    },
+  });
+
+  return md;
+};
 
 interface FrontmatterData {
   [key: string]: string | number | boolean | null | undefined;
@@ -65,9 +90,12 @@ const parseFrontmatter = (
 /**
  * Convert markdown content to HTML with syntax highlighting
  */
-export const markdownToHtml = (content: string): ParsedMarkdown => {
+export const markdownToHtml = async (
+  content: string,
+): Promise<ParsedMarkdown> => {
+  const parser = await getMarkdownParser();
   const { frontmatter, content: bodyContent } = parseFrontmatter(content);
-  const html = md.render(bodyContent);
+  const html = parser.render(bodyContent);
 
   return {
     html,

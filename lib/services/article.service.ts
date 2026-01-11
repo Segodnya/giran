@@ -26,8 +26,15 @@ const getGitHubService = () => {
   return githubService;
 };
 
-const isCacheValid = <T>(cache: CacheEntry<T>) => {
-  return Date.now() - cache.timestamp < CACHE_TTL;
+const isCacheValid = <T>(cache: CacheEntry<T>, newSha?: string | null): boolean => {
+  const ttlValid = Date.now() - cache.timestamp < CACHE_TTL;
+
+  // If we have a new SHA and cached SHA, compare them for invalidation
+  if (newSha && cache.sha && newSha !== cache.sha) {
+    return false; // Cache is invalid if SHA changed
+  }
+
+  return ttlValid;
 };
 
 /**
@@ -37,11 +44,18 @@ const getArticlesFromGitHub = async (): Promise<ArticleListItem[]> => {
   const cacheKey = 'articles-list';
   const cached = articlesCache.get(cacheKey);
 
-  if (cached && isCacheValid(cached)) {
+  const service = getGitHubService();
+
+  // Check for new commits to invalidate cache
+  const currentSha = await service.getLastCommitSha(
+    GITHUB_CONFIG.owner!,
+    GITHUB_CONFIG.repo!,
+    GITHUB_CONFIG.folder,
+  );
+
+  if (cached && isCacheValid(cached, currentSha)) {
     return cached.data;
   }
-
-  const service = getGitHubService();
 
   const articles = await service.listArticles(
     GITHUB_CONFIG.owner!,
@@ -60,6 +74,7 @@ const getArticlesFromGitHub = async (): Promise<ArticleListItem[]> => {
   articlesCache.set(cacheKey, {
     data: articleList,
     timestamp: Date.now(),
+    sha: currentSha || undefined,
   });
 
   return articleList;
@@ -72,13 +87,21 @@ const getArticleFromGitHub = async (id: string): Promise<Article | null> => {
   const cacheKey = `article-${id}`;
   const cached = articleCache.get(cacheKey);
 
-  if (cached && isCacheValid(cached)) {
+  const service = getGitHubService();
+
+  // Check for new commits to invalidate cache
+  const filePath = `${GITHUB_CONFIG.folder}/${id}.md`;
+  const currentSha = await service.getLastCommitSha(
+    GITHUB_CONFIG.owner!,
+    GITHUB_CONFIG.repo!,
+    filePath,
+  );
+
+  if (cached && isCacheValid(cached, currentSha)) {
     return cached.data;
   }
 
   try {
-    const service = getGitHubService();
-
     const article = await service.getArticle(
       GITHUB_CONFIG.owner!,
       GITHUB_CONFIG.repo!,
@@ -89,6 +112,7 @@ const getArticleFromGitHub = async (id: string): Promise<Article | null> => {
     articleCache.set(cacheKey, {
       data: article,
       timestamp: Date.now(),
+      sha: currentSha || undefined,
     });
 
     return article;
