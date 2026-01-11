@@ -18,6 +18,7 @@ services:
       - ./content:/app/content
       - ./tsconfig.json:/app/tsconfig.json:ro
       - ./next.config.ts:/app/next.config.ts:ro
+      - ./postcss.config.mjs:/app/postcss.config.mjs:ro
     command: ["bun", "run", "dev"]
 
   app-prod:
