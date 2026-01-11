@@ -23,16 +23,3 @@ export const isGitHubEnabled = () => {
 /**
  * Validate GitHub configuration and throw if invalid
  */
-export const validateGitHubConfig = () => {
-  if (!GITHUB_CONFIG.token) {
-    throw new Error('GITHUB_TOKEN environment variable is required');
-  }
-
-  if (!GITHUB_CONFIG.owner) {
-    throw new Error('GITHUB_REPO_OWNER environment variable is required');
-  }
-
-  if (!GITHUB_CONFIG.repo) {
-    throw new Error('GITHUB_REPO_NAME environment variable is required');
-  }
-};

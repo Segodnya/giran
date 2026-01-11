@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "bun test",
-    "test:watch": "bun test --watch"
+    "test:watch": "bun test --watch",
+    "knip": "knip"
   },
   "dependencies": {
     "@octokit/rest": "22.0.1",
@@ -29,6 +30,8 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
+    "knip": "5.80.2",
+    "postcss": "^8",
     "tailwindcss": "^4",
     "typescript": "^5"
   },

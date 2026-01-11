@@ -44,3 +44,9 @@ next-env.d.ts
 .vscode/
 dist/
 node_modules/
+
+# legacy directories (kept only as local references)
+client/
+server/
+githuber/
+admin-front/

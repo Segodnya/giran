@@ -469,16 +469,16 @@ services:
 
 ### 5.1 Code Cleanup
 
-- [ ] **Delete completely**:
+- [x] **Delete completely**:
   - `client/` - Astro app (replaced by Next.js)
   - `server/` - Express/Elysia server (functionality moved to Next.js API routes)
   - `githuber/` - GitHub API wrapper (GitHub logic now in lib/services)
   - `admin-front/` - Unused frontend
   - `nginx.conf` - No longer needed with single container
-- [ ] **Keep as reference**:
+- [x] **Keep as reference**:
   - `/content` folder - sample articles (can be reference for types/structure)
-- [ ] Update `.gitignore` to exclude old directories if keeping for reference
-- [ ] Add knip config to find unused code across the app
+- [x] Update `.gitignore` to exclude old directories if keeping for reference
+- [x] Add knip config to find unused code across the app
 
 ### 5.2 Performance
 
@@ -496,24 +496,6 @@ services:
 ### 5.3 Documentation
 
 - [ ] Update `README.md` with new architecture
-
-  ```markdown
-  # Giran - Article Reader Fullstack-App
-
-  Single Next.js 16 app powered by Bun.
-
-  ## Setup
-  - GitHub token for fetching articles
-  - Environment variables for GitHub repository
-
-  ## Local Development
-  - `bun install`
-  - `bun run dev`
-
-  ## Docker
-  - `docker-compose up`
-  ```
-
 - [ ] Document all environment variables
 - [ ] Add local development instructions
 - [ ] Document GitHub rate limiting and caching strategy

@@ -1,6 +1,6 @@
 import { Article } from '../types/article';
 
-export const MOCK_ARTICLES: Article[] = [
+const MOCK_ARTICLES: Article[] = [
   {
     id: 'astro',
     title: 'Introduction to Astro Framework',
